@@ -43,6 +43,7 @@ use Poweradmin\ZoneTemplate;
 require_once 'inc/toolkit.inc.php';
 require_once 'inc/pagination.inc.php';
 require_once 'inc/messages.inc.php';
+require_once 'inc/exportzone.inc.php';
 
 class EditController extends BaseController {
 
@@ -130,6 +131,54 @@ class EditController extends BaseController {
             } else {
                 $this->setMessage('edit', 'error', _('Zone has not been updated successfully.'));
             }
+        }
+
+        if (isset($_POST['export_zone'])) {  
+            header('Content-Description: Export Zone');
+
+            switch ($_POST['export_format']) {
+                case 'export_bind_pp':
+                    $file_ext = ".zone";
+                    $export_engine = "bind";
+                    $bind_formatting = true;
+                    header('Content-Type: text/plain');
+                    break;
+                case 'export_bind':
+                    $file_ext = ".zone";
+                    $export_engine = "bind";
+                    $bind_formatting = false;
+                    header('Content-Type: text/plain');
+                    break;
+                case 'export_csv_header':
+                    $file_ext = ".csv";
+                    $export_engine = "csv";
+                    $csv_header = "present";
+                    header('Content-Type: text/csv; header=' . $csv_header);
+                    break;
+                case 'export_csv':
+                    $file_ext = ".csv";
+                    $export_engine = "csv";
+                    $csv_header = "absent";
+                    header('Content-Type: text/csv; header=' . $csv_header);
+                    break;
+            }
+            
+            header('Content-Disposition: attachment; filename=' . DnsRecord::get_domain_name_by_id($zone_id) . $file_ext);
+            header('Connection: Keep-Alive');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+
+            switch ($export_engine) {
+                case 'bind':
+                    export_zone_bind($zone_id, $bind_formatting);
+                    break;
+                case 'csv':
+                    export_zone_csv($zone_id, $csv_header);
+                    break;
+            }
+
+            exit;
         }
 
         if (isset($_POST['save_as'])) {

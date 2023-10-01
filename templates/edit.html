@@ -431,5 +431,27 @@
             <td>&nbsp;</td>
         </tr>
         {% endif %}
+
+        <tr>
+            <th colspan="2">{% trans %}Export zone{% endtrans %}</th>
+        </tr>
+
+        <form action="edit.php?id={{ zone_id }}&row_amount={{ row_amount }}" method="post">
+            <input type="hidden" name="domain" value="{{ zone_id }}">
+            <tr>
+                <td>
+                    <select class="form-select form-select-sm" name="export_format">
+                        <option value="export_bind_pp">BIND zone (formatted)</option>
+                        <option value="export_bind">BIND zone</option>
+                        <option value="export_csv_header">Plain text csv with header</option>
+                        <option value="export_csv">Plain text csv</option>
+                    </select>
+                </td>
+                <td>
+                    <input class="btn btn-outline-secondary btn-sm" type="submit" name="export_zone"
+                           value="{% trans %}Export{% endtrans %}">
+                </td>
+            </tr>
+        </form>
     </table>
 </div>
